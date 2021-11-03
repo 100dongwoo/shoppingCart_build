@@ -1,71 +1,168 @@
-import React from 'react';
+import React, {
+    useEffect,
+    useState,
+} from 'react';
 import './index.css';
-function ProductScreen(props) {
+import {
+    useDispatch,
+    useSelector,
+} from 'react-redux';
+import {
+    getProductDetails,
+    getProducts,
+} from '../../redux/actions/productActions';
+import { addToCart } from '../../redux/actions/cartActions';
+
+function ProductScreen({
+    match,
+    history,
+}) {
+    const [qty, setQty] = useState(1);
+    const dispatch = useDispatch();
+    const productDetails = useSelector(
+        (state) =>
+            state.getProductDetails
+    );
+    const {
+        loading,
+        error,
+        product,
+    } = productDetails;
+    useEffect(() => {
+        if (
+            product &&
+            match.params.id !==
+                product._id
+        ) {
+            dispatch(
+                getProductDetails(
+                    match.params.id
+                )
+            );
+        }
+    }, [dispatch, product, match]);
+    const addToCartHandler = () => {
+        dispatch(
+            addToCart(product._id, qty)
+        );
+        history.push(`/cart`);
+    };
     return (
         <div className="productscreen">
-            <div className="productscreen__left">
-                <div className="left__image">
-                    <img
-                        src={
-                            'https://t1.daumcdn.net/liveboard/tailorcontents/b0b8630dd9ac4e3c9d6bb98a3548946a.jpg'
-                        }
-                        alt={1}
-                    />
-                </div>
-                <div className="left__info">
-                    <p className="left__name">
-                        1
-                    </p>
-                    <p>Price: $ 1</p>
-                    <p>
-                        Description: {1}
-                    </p>
-                </div>
-            </div>
-            <div className="productscreen__right">
-                <div className="right__info">
-                    <p>
-                        Price:
-                        <span>123</span>
-                    </p>
-                    <p>
-                        Status:
-                        <span>
-                            "In Stock"
-                            {/*{product.countInStock > 0 ? "In Stock" : "Out of Stock"}*/}
-                        </span>
-                    </p>
-                    <p>
-                        Qty
-                        <select>
-                            <option
-                                value={
-                                    1
+            {loading ? (
+                <h2>Loading...</h2>
+            ) : error ? (
+                <h2>{error}</h2>
+            ) : (
+                <>
+                    <div className="productscreen__left">
+                        <div className="left__image">
+                            <img
+                                src={
+                                    product.imageUrl
                                 }
-                            >
-                                1
-                            </option>
-                            <option
-                                value={
-                                    2
+                                alt={
+                                    product.name
                                 }
-                            >
-                                13
-                            </option>
-                        </select>
-                    </p>
-                    <p>
-                        <button
-                            type="button"
-                            // onClick={
-                            //     addToCartHandler
-                            // }
-                        >
-                            Add To Cart
-                        </button>
-                    </p>
-                </div>
-            </div>
+                            />
+                        </div>
+                        <div className="left__info">
+                            <p className="left__name">
+                                {
+                                    product.name
+                                }
+                            </p>
+                            <p>
+                                Price: $
+                                {
+                                    product.price
+                                }
+                            </p>
+                            <p>
+                                Description:{' '}
+                                {
+                                    product.description
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    <div className="productscreen__right">
+                        <div className="right__info">
+                            <p>
+                                Price:
+                                <span>
+                                    $
+                                    {
+                                        product.price
+                                    }
+                                </span>
+                            </p>
+                            <p>
+                                Status:
+                                <span>
+                                    {product.countInStock >
+                                    0
+                                        ? 'In Stock'
+                                        : 'Out of Stock'}
+                                </span>
+                            </p>
+                            <p>
+                                Qty
+                                <select
+                                    value={
+                                        qty
+                                    }
+                                    onChange={(
+                                        e
+                                    ) =>
+                                        setQty(
+                                            e
+                                                .target
+                                                .value
+                                        )
+                                    }
+                                >
+                                    {[
+                                        ...Array(
+                                            product.countInStock
+                                        ).keys(),
+                                    ].map(
+                                        (
+                                            x
+                                        ) => (
+                                            <option
+                                                key={
+                                                    x +
+                                                    1
+                                                }
+                                                value={
+                                                    x +
+                                                    1
+                                                }
+                                            >
+                                                {x +
+                                                    1}
+                                            </option>
+                                        )
+                                    )}
+                                </select>
+                            </p>
+                            <p>
+                                <button
+                                    type="button"
+                                    onClick={
+                                        addToCartHandler
+                                    }
+                                >
+                                    Add
+                                    To
+                                    Cart
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     );
 }

@@ -24,13 +24,13 @@ const CartItem = ({
                 ${item.price}
             </p>
             <select
-                value={item.qty}
-                // onChange={(e) =>
-                //     qtyChangeHandler(
-                //         item.product,
-                //         e.target.value
-                //     )
-                // }
+                value={item?.qty}
+                onChange={(e) =>
+                    qtyChangeHandler(
+                        item.product,
+                        e.target.value
+                    )
+                }
                 className="cartItem__select"
             >
                 {[
@@ -48,11 +48,11 @@ const CartItem = ({
             </select>
             <button
                 className="cartItem__deleteBtn"
-                // onClick={() =>
-                //     removeHandler(
-                //         item.product
-                //     )
-                // }
+                onClick={() =>
+                    removeHandler(
+                        item.product
+                    )
+                }
             >
                 <i className="fas fa-trash"></i>
             </button>
